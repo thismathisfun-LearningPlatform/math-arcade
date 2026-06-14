@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Arcade - Practice Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Trebuchet MS', system-ui, sans-serif;
+            background: linear-gradient(135deg, #EDE9FF 0%, #FAF9FF 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* Colors */
+        :root {
+            --ink: #1A1640;
+            --paper: #FAF9FF;
+            --violet: #6C4DF6;
+            --teal: #1FC8A9;
+            --sky: #4DA8F6;
+            --coral: #FF6B7A;
+            --orange: #E8960C;
+            --green: #22A347;
+            --mint: #E2FAF4;
+            --lavender: #EDE9FF;
+            --blush: #FFE9EC;
+            --cream: #FFF6DF;
+        }
+
+        /* Header */
+        header {
+            background: var(--ink);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        header h1 { font-size: 28px; }
+        header p { font-size: 12px; opacity: 0.7; }
+
+        /* Buttons */
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        button:active { transform: scale(0.98); }
+
+        .btn-primary { background: var(--violet); color: white; }
+        .btn-secondary { background: var(--cream); color: #7A5C08; }
+        .btn-success { background: var(--mint); color: var(--teal); }
+        .btn-danger { background: var(--blush); color: var(--coral); }
+
+        /* Role Selection */
+        .role-select {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            margin: 50px auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .role-select h2 { color: var(--violet); margin-bottom: 20px; }
+        .role-select .emoji { font-size: 48px; margin: 20px 0; }
+        .role-select button { width: 100%; margin: 10px 0; }
+
+        /* PIN Gate */
+        .pin-gate {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 350px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .pin-gate input {
+            width: 100%;
+            padding: 15px;
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 8px;
+            border: 2px solid var(--lavender);
+            border-radius: 12px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        /* Auth Forms */
+        .auth-form {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 400px;
+            margin: 30px auto;
+        }
+
+        .auth-form input, .auth-form select {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 2px solid var(--lavender);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .auth-form label {
+            font-weight: bold;
+            font-size: 12px;
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        /* Main Content */
+        .main-content { display: none; }
+        .main-content.active { display: block; }
+
+        /* Student View */
+        .student-view { max-width: 800px; margin: 0 auto; }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 16px;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .stat-value { font-size: 24px; font-weight: bold; color: var(--violet); }
+        .stat-label { font-size: 12px; opacity: 0.6; margin-top: 5px; }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            background: #F4F2FC;
+            color: var(--ink);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .chip.active {
+            background: var(--violet);
+            color: white;
+            border-color: var(--violet);
+        }
+
+        .chip:hover { transform: translateY(-1px); }
+
+        /* Problem Card */
+        .problem-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .problem-header {
+            background: var(--lavender);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .problem-title {
+            font-weight: bold;
+            color: var(--violet);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .timer {
+            font-weight: bold;
+            padding: 8px 15px;
+            background: var(--cream);
+            border-radius: 12px;
+            color: #7A5C08;
+        }
+
+        .timer.warning { background: var(--blush); color: var(--coral); }
+
+        .problem-body {
+            padding: 30px;
+        }
+
+        .problem-question {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .choice {
+            padding: 15px;
+            border: 2.5px solid #F4F2FC;
+            border-radius: 16px;
+            background: #F4F2FC;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .choice:hover { transform: translateY(-2px); }
+        .choice.selected { border-color: var(--violet); background: var(--lavender); }
+        .choice.correct { border-color: var(--teal); background: var(--mint); color: #0E7E69; }
+        .choice.incorrect { border-color: var(--coral); background: var(--blush); color: var(--coral); }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .feedback.correct { background: var(--mint); color: #0E7E69; }
+        .feedback.incorrect { background: var(--blush); color: var(--coral); }
+
+        .hint-box {
+            padding: 15px;
+            background: var(--cream);
+            border-radius: 12px;
+            margin: 15px 0;
+            color: #7A5C08;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(36, 31, 78, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 { margin-bottom: 15px; color: var(--violet); }
+        .modal-content p { margin-bottom: 15px; opacity: 0.7; }
+        .modal-content textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--lavender);
+            border-radius: 12px;
+            font-family: inherit;
+            margin-bottom: 15px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Teacher Dashboard */
+        .teacher-dashboard { max-width: 900px; margin: 0 auto; }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tabs button {
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: white;
+            border: 2px solid transparent;
+            color: var(--ink);
+        }
+
+        .tabs button.active {
+            background: var(--violet);
+            color: white;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .student-row {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .student-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .student-name { font-weight: bold; margin-bottom: 5px; }
+        .student-stats { font-size: 12px; opacity: 0.7; }
+
+        .problem-row {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .help-request {
+            background: #E5F2FF;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--sky);
+            margin-bottom: 15px;
+        }
+
+        .help-request h4 { margin-bottom: 10px; }
+        .help-request p { margin-bottom: 10px; opacity: 0.8; }
+
+        /* Hidden */
+        .hidden { display: none; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            header { flex-direction: column; text-align: center; }
+            .filters { flex-direction: column; }
+            .chip { width: 100%; }
+            .choices { grid-template-columns: 1fr; }
+            .stats { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header id="header" class="hidden">
+            <div>
+                <h1 id="header-title">Math Arcade</h1>
+                <p id="header-subtitle"></p>
+            </div>
+        </header>
+
+        <!-- Role Selection -->
+        <div id="roleSelect" class="role-select">
+            <div class="emoji">📚</div>
+            <h2>Math Arcade</h2>
+            <p>Who are you?</p>
+            <button class="btn-primary" onclick="app.selectRole('student')">🎓 I'm a Student</button>
+            <button class="btn-secondary" onclick="app.selectRole('teacher')">🍎 I'm the Teacher</button>
+        </div>
+
+        <!-- PIN Gate -->
+        <div id="pinGate" class="pin-gate hidden">
+            <div class="emoji">🔐</div>
+            <h3>Teacher Access</h3>
+            <p>Enter your PIN</p>
+            <input type="password" id="pinInput" maxlength="8" placeholder="PIN">
+            <button class="btn-primary" onclick="app.checkPin()">Unlock →</button>
+            <p style="margin-top: 20px; font-size: 12px; opacity: 0.5;">Default: 1234</p>
+        </div>
+
+        <!-- Student Auth -->
+        <div id="studentAuth" class="auth-form hidden">
+            <h2 style="color: var(--violet); margin-bottom: 20px;">Student Sign Up / Log In</h2>
+            <div id="authMode">
+                <label>Mode:</label>
+                <button onclick="app.toggleAuthMode('login')" style="width: 48%; margin-right: 4%;">🔑 Log In</button>
+                <button onclick="app.toggleAuthMode('signup')" style="width: 48%;">📝 Sign Up</button>
+            </div>
+
+            <div id="signupFields" class="hidden">
+                <label>First Name:</label>
+                <input type="text" id="firstName" placeholder="Maria">
+                <label>Last Name:</label>
+                <input type="text" id="lastName" placeholder="Garcia">
+            </div>
+
+            <label>Username:</label>
+            <input type="text" id="username" placeholder="maria_garcia">
+            <label>Password:</label>
+            <input type="password" id="password" placeholder="••••">
+
+            <button class="btn-primary" onclick="app.authStudent()" style="width: 100%; margin-top: 20px;">Continue →</button>
+            <p id="authError" style="color: var(--coral); margin-top: 10px; font-size: 12px;"></p>
+        </div>
+
+        <!-- Student View -->
+        <div id="studentView" class="main-content student-view">
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="correctCount">0</div>
+                    <div class="stat-label">Correct</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="triedCount">0</div>
+                    <div class="stat-label">Tried</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="streakCount">0</div>
+                    <div class="stat-label">Streak</div>
+                </div>
+            </div>
+
+            <div class="filters" id="topicFilter"></div>
+            <div class="filters" id="difficultyFilter"></div>
+
+            <div class="problem-card">
+                <div class="problem-header">
+                    <div class="problem-title">
+                        <span id="problemTopic">Topic</span>
+                        <span id="problemDiff"></span>
+                    </div>
+                    <div class="timer" id="timer">60s</div>
+                </div>
+                <div class="problem-body">
+                    <div class="problem-question" id="question">Question text</div>
+                    <div class="choices" id="choices"></div>
+                    <div id="feedback"></div>
+                    <div id="hintBox" class="hidden">
+                        <button onclick="app.showHint()" class="btn-secondary">💡 Show Hint</button>
+                    </div>
+                    <div id="hintDisplay"></div>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button onclick="app.askForHelp()" class="btn-secondary">🙋 Ask Teacher</button>
+                        <button onclick="app.nextProblem()" class="btn-primary">Next →</button>
+                        <button onclick="app.showScratchpad()" class="btn-secondary">📝 Scratchpad</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher View -->
+        <div id="teacherView" class="main-content teacher-dashboard">
+            <div class="tabs">
+                <button class="active" onclick="app.switchTab('students')">👩‍🎓 Students</button>
+                <button onclick="app.switchTab('problems')">📚 Problems</button>
+                <button onclick="app.switchTab('help')">🙋 Help Requests</button>
+                <button onclick="app.switchTab('settings')">⚙️ Settings</button>
+            </div>
+
+            <!-- Students Tab -->
+            <div id="students-tab" class="tab-content active">
+                <button onclick="app.copyStudentLink()" class="btn-primary" style="margin-bottom: 20px;">📋 Copy Student Link</button>
+                <div id="studentsList"></div>
+            </div>
+
+            <!-- Problems Tab -->
+            <div id="problems-tab" class="tab-content">
+                <div id="problemsList"></div>
+            </div>
+
+            <!-- Help Tab -->
+            <div id="help-tab" class="tab-content">
+                <div id="helpList"></div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <h3 style="color: var(--violet); margin-bottom: 15px;">🔐 Change Teacher PIN</h3>
+                <input type="password" id="newPin" placeholder="New PIN (min 4 chars)" style="padding: 12px; border: 2px solid var(--lavender); border-radius: 12px; margin-bottom: 10px; width: 100%;">
+                <button onclick="app.updatePin()" class="btn-primary">Save PIN</button>
+                <p id="pinMsg" style="margin-top: 10px; font-size: 12px;"></p>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <div id="helpModal" class="modal" onclick="this.classList.remove('active')">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <h3>🙋 Ask for Help</h3>
+                <p>What's tripping you up?</p>
+                <select id="helpReason" style="width: 100%; padding: 10px; border: 2px solid var(--lavender); border-radius: 8px; margin-bottom: 15px;">
+                    <option>I don't know where to start</option>
+                    <option>I got it wrong and don't understand why</option>
+                    <option>I don't understand the question</option>
+                    <option>Something else</option>
+                </select>
+                <textarea id="helpNote" placeholder="Tell your teacher what you tried (optional)"></textarea>
+                <button onclick="app.submitHelp()" class="btn-primary" style="width: 100%;">Send to Teacher</button>
+            </div>
+        </div>
+
+        <div id="scratchpadModal" class="modal" onclick="this.classList.remove('active')">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <h3>📝 Scratch Pad</h3>
+                <p>Show your work here. Your teacher can see what you write.</p>
+                <textarea id="scratchpadText" placeholder="Write your calculations and notes..." style="width: 100%; min-height: 150px;"></textarea>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button onclick="document.getElementById('scratchpadText').value = ''" class="btn-danger" style="flex: 1;">Clear</button>
+                    <button onclick="document.getElementById('scratchpadModal').classList.remove('active')" class="btn-primary" style="flex: 1;">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // QUESTIONS DATA
+        const QUESTIONS = {
+            algebra1: {
+                Easy: [
+                    { question: "Solve: 2x + 5 = 13", choices: ["x=4", "x=9", "x=3", "x=6"], answer: 0, hint: "Subtract 5, then divide by 2." },
+                    { question: "Solve: x − 7 = 3", choices: ["x=10", "x=−4", "x=4", "x=21"], answer: 0, hint: "Add 7 to both sides." },
+                    { question: "Solve: 3x = 15", choices: ["x=5", "x=18", "x=45", "x=12"], answer: 0, hint: "Divide both sides by 3." },
+                    { question: "What is the slope of (1,2) and (3,8)?", choices: ["3", "2", "6", "1/3"], answer: 0, hint: "m = (y₂−y₁)/(x₂−x₁)" },
+                    { question: "Solve: x/4 = 7", choices: ["x=28", "x=11", "x=3", "x=1.75"], answer: 0, hint: "Multiply both sides by 4." },
+                ],
+                Medium: [
+                    { question: "Solve: 3(x − 2) = 4x + 1", choices: ["x=−7", "x=7", "x=1", "x=−1"], answer: 0, hint: "Distribute first, then collect x-terms." },
+                    { question: "Solve: 5x − 3 = 3x + 11", choices: ["x=7", "x=4", "x=8", "x=2"], answer: 0, hint: "Subtract 3x: 2x−3=11" },
+                    { question: "Solve: y=2x+1 and y=x+4", choices: ["(3,7)", "(2,5)", "(1,3)", "(4,9)"], answer: 0, hint: "Set equal: 2x+1=x+4" },
+                    { question: "Simplify: x³ · x⁵", choices: ["x⁸", "x¹⁵", "2x⁸", "x²"], answer: 0, hint: "Add exponents." },
+                    { question: "Expand: (x + 3)(x − 5)", choices: ["x²−2x−15", "x²+2x−15", "x²−15", "x²−2x+15"], answer: 0, hint: "Use FOIL." },
+                ],
+                Hard: [
+                    { question: "Solve: (x+3)/4 − (x−1)/2 = 1", choices: ["x=−3", "x=5", "x=3", "x=−5"], answer: 0, hint: "Multiply by 4 to clear denominators." },
+                    { question: "Solve: 3(2x−1) − 2(x+3) = 4x − 1", choices: ["x=4", "x=−1", "x=2", "x=1"], answer: 0, hint: "Expand, simplify, solve." },
+                    { question: "The sum of 3 consecutive integers is 45. Find the largest.", choices: ["16", "14", "15", "17"], answer: 0, hint: "n+(n+1)+(n+2)=45" },
+                    { question: "Solve: |2x − 4| = 10", choices: ["x=7 or x=−3", "x=3 or x=7", "x=7 only", "x=−3 only"], answer: 0, hint: "Consider both cases." },
+                    { question: "Two numbers in ratio 3:7. Sum=50. Find larger.", choices: ["35", "15", "30", "20"], answer: 0, hint: "7/10 × 50 = ?" },
+                ]
+            },
+            geometry: {
+                Easy: [
+                    { question: "A triangle has angles 45° and 80°. Third angle?", choices: ["55°", "45°", "80°", "35°"], answer: 0, hint: "Angles sum to 180°." },
+                    { question: "Find area of rectangle: 8 × 5", choices: ["40", "26", "13", "80"], answer: 0, hint: "Area = length × width" },
+                    { question: "Perimeter of square with side 6?", choices: ["24", "36", "12", "48"], answer: 0, hint: "Perimeter = 4 × side" },
+                    { question: "What is the hypotenuse of 3-4-? right triangle?", choices: ["5", "7", "√7", "12"], answer: 0, hint: "3²+4²=c²" },
+                    { question: "Area of triangle with base 10, height 4?", choices: ["20", "40", "14", "80"], answer: 0, hint: "A = ½ × base × height" },
+                ],
+                Medium: [
+                    { question: "In 30-60-90 triangle, shortest side is 7. Hypotenuse?", choices: ["14", "7√3", "7√2", "21"], answer: 0, hint: "Hypotenuse = 2 × shortest" },
+                    { question: "In 45-45-90 triangle, one leg is 8. Hypotenuse?", choices: ["8√2", "8√3", "16", "4√2"], answer: 0, hint: "Hypotenuse = leg × √2" },
+                    { question: "What is the circumference? r=6, π≈3.14", choices: ["37.68", "18.84", "113.04", "28.26"], answer: 0, hint: "C = 2πr" },
+                    { question: "Two vertical angles always equal?", choices: ["Each other", "180°", "90°", "360°"], answer: 0, hint: "Vertical angles are congruent." },
+                    { question: "Area of trapezoid: b₁=6, b₂=10, h=4?", choices: ["32", "60", "24", "16"], answer: 0, hint: "A = ½(b₁+b₂)h" },
+                ],
+                Hard: [
+                    { question: "30-60-90 triangle, hypotenuse=20. Longer leg?", choices: ["10√3", "10", "20√3", "15"], answer: 0, hint: "Longer leg = (√3/2) × hypotenuse" },
+                    { question: "Diagonal of rectangle 13, one side 5. Area?", choices: ["60", "65", "52", "26"], answer: 0, hint: "Other side = √(13²−5²)=12" },
+                    { question: "Sphere radius 3. Volume? π≈3.14", choices: ["113.04", "37.68", "28.26", "56.52"], answer: 0, hint: "V = (4/3)πr³" },
+                    { question: "Two similar triangles, sides ratio 3:5. Smaller area=18. Larger?", choices: ["50", "90", "30", "45"], answer: 0, hint: "Area ratio = (3:5)²=9:25" },
+                    { question: "Cone: r=4, slant height=5. Surface area? π≈3.14", choices: ["113.04", "56.52", "28.26", "75.36"], answer: 0, hint: "SA = πr² + πrl" },
+                ]
+            },
+            prealgebra: {
+                Easy: [
+                    { question: "Evaluate: 3 + 4 × 2 − 1", choices: ["10", "13", "6", "14"], answer: 0, hint: "Multiply before adding." },
+                    { question: "What is 3/4 + 1/4?", choices: ["1", "4/8", "1/2", "2"], answer: 0, hint: "Add numerators." },
+                    { question: "What is 25% of 80?", choices: ["20", "25", "40", "15"], answer: 0, hint: "0.25 × 80" },
+                    { question: "Simplify: 4x + 3x − x", choices: ["6x", "8x", "7x", "4x"], answer: 0, hint: "Combine like terms." },
+                    { question: "What is 2³?", choices: ["8", "6", "9", "16"], answer: 0, hint: "2 × 2 × 2" },
+                ],
+                Medium: [
+                    { question: "Evaluate: (5 + 3)² ÷ 4 − 6", choices: ["10", "22", "7", "−6"], answer: 0, hint: "Parens → exponent → divide" },
+                    { question: "Multiply: 2/3 × 3/8", choices: ["1/4", "5/11", "6/24", "2/8"], answer: 0, hint: "Multiply across." },
+                    { question: "What is 1/3 + 1/4?", choices: ["7/12", "2/7", "1/7", "2/12"], answer: 0, hint: "LCD = 12" },
+                    { question: "Round 3.678 to nearest tenth.", choices: ["3.7", "3.6", "4.0", "3.68"], answer: 0, hint: "Look at hundredths." },
+                    { question: "A recipe uses 2 cups sugar for 5 flour. For 10 flour, how much sugar?", choices: ["4", "5", "3", "2"], answer: 0, hint: "2/5 = ?/10" },
+                ],
+                Hard: [
+                    { question: "Evaluate: −3 × (−2)² + 4(−1 + 6) ÷ 2", choices: ["−2", "10", "−10", "2"], answer: 0, hint: "(−2)²=9. Distribute carefully." },
+                    { question: "Evaluate: (3/4 ÷ 1/2) × (2/3 + 1/6)", choices: ["5/4", "1 1/8", "7/8", "3/4"], answer: 0, hint: "Simplify each part first." },
+                    { question: "Solve: 5/x = 20/8", choices: ["2", "10", "4", "40"], answer: 0, hint: "Cross multiply." },
+                    { question: "$120 split in ratio 2:3:5. Largest share?", choices: ["$60", "$24", "$36", "$50"], answer: 0, hint: "5/10 × 120" },
+                    { question: "A coat $120 → $84. % discount?", choices: ["30%", "36%", "40%", "70%"], answer: 0, hint: "(120−84)/120 × 100" },
+                ]
+            },
+            algebra2: {
+                Easy: [
+                    { question: "Solve: x² − 4 = 0", choices: ["x=±2", "x=2", "x=4", "x=±4"], answer: 0, hint: "x²=4" },
+                    { question: "What is the degree of 5x³−2x+7?", choices: ["3", "2", "1", "5"], answer: 0, hint: "Highest power." },
+                    { question: "Evaluate: log₂(32)", choices: ["5", "4", "6", "2"], answer: 0, hint: "2 to what power = 32?" },
+                    { question: "Simplify: √72", choices: ["6√2", "8√2", "3√8", "36√2"], answer: 0, hint: "72 = 36 × 2" },
+                    { question: "Which is exponential growth?", choices: ["y=3(2)ˣ", "y=3(0.5)ˣ", "y=3x²", "y=2x+3"], answer: 0, hint: "Base > 1" },
+                ],
+                Medium: [
+                    { question: "Find discriminant: x²−6x+5=0", choices: ["16", "−4", "36", "−16"], answer: 0, hint: "b²−4ac" },
+                    { question: "Expand: (x+1)³", choices: ["x³+3x²+3x+1", "x³+x²+x+1", "x³+3x+1", "x³+6x²+3x+1"], answer: 0, hint: "(a+b)³=a³+3a²b+3ab²+b³" },
+                    { question: "Simplify: 2√3 + 5√3", choices: ["7√3", "10√3", "7√6", "10√6"], answer: 0, hint: "Add coefficients." },
+                    { question: "What is the 5th term of 3, 6, 9, 12, ...?", choices: ["15", "18", "12", "9"], answer: 0, hint: "Arithmetic with d=3" },
+                    { question: "Simplify: (2+i)(1−4i)", choices: ["6−7i", "2−7i", "6+7i", "2+7i"], answer: 0, hint: "FOIL, remember i²=−1" },
+                ],
+                Hard: [
+                    { question: "For what k does x²−kx+(k+3)=0 have equal roots?", choices: ["k=6 or k=−2", "k=6", "k=−2", "k=3 or k=−1"], answer: 0, hint: "Discriminant = 0" },
+                    { question: "Solve: √(2x+3)+1=x", choices: ["x=7", "x=1 or x=7", "x=1", "No solution"], answer: 0, hint: "Check solutions." },
+                    { question: "Solve: 9^x = 27", choices: ["x=3/2", "x=2", "x=3", "x=1"], answer: 0, hint: "9ˣ=(3²)ˣ=3^(2x)=3³" },
+                    { question: "Solve: log₂(x+3)+log₂(x−1)=4", choices: ["x=3", "x=5", "x=−5 or x=3", "x=1"], answer: 0, hint: "Combine logs, solve." },
+                    { question: "Path of ball: y=−x²+4x+1. Max height?", choices: ["5", "4", "6", "1"], answer: 0, hint: "Find vertex." },
+                ]
+            }
+        };
+
+        // APP STATE
+        const app = {
+            role: null,
+            student: null,
+            teacher: null,
+            currentCourse: 'algebra1',
+            currentTopic: 'All',
+            currentDiff: 'All',
+            currentProblemIdx: 0,
+            currentScore: { right: 0, tried: 0, streak: 0 },
+            students: {},
+            teachers: { pin: '1234' },
+            helpRequests: [],
+            problems: {},
+            showingHint: false,
+            timer: null,
+            timeRemaining: 0,
+
+            selectRole(role) {
+                this.role = role;
+                document.getElementById('roleSelect').classList.add('hidden');
+                if (role === 'teacher') {
+                    document.getElementById('pinGate').classList.remove('hidden');
+                } else {
+                    document.getElementById('studentAuth').classList.remove('hidden');
+                }
+            },
+
+            checkPin() {
+                const pin = document.getElementById('pinInput').value;
+                if (pin === this.teachers.pin) {
+                    this.showTeacherView();
+                } else {
+                    alert('Incorrect PIN. Try 1234');
+                }
+            },
+
+            toggleAuthMode(mode) {
+                const fields = document.getElementById('signupFields');
+                if (mode === 'signup') {
+                    fields.classList.remove('hidden');
+                } else {
+                    fields.classList.add('hidden');
+                }
+            },
+
+            authStudent() {
+                const username = document.getElementById('username').value.trim().toLowerCase();
+                const password = document.getElementById('password').value;
+                const errMsg = document.getElementById('authError');
+                errMsg.textContent = '';
+
+                if (!username || !password) {
+                    errMsg.textContent = 'Please fill in all fields';
+                    return;
+                }
+
+                const signupFields = document.getElementById('signupFields');
+                if (!signupFields.classList.contains('hidden')) {
+                    const fname = document.getElementById('firstName').value.trim();
+                    const lname = document.getElementById('lastName').value.trim();
+                    if (!fname || !lname) {
+                        errMsg.textContent = 'Please enter first and last name';
+                        return;
+                    }
+                    this.student = { id: username, firstName: fname, lastName: lname, password, scores: {} };
+                    this.students[username] = this.student;
+                    localStorage.setItem('students', JSON.stringify(this.students));
+                } else {
+                    if (!this.students[username] || this.students[username].password !== password) {
+                        errMsg.textContent = 'Username or password incorrect';
+                        return;
+                    }
+                    this.student = this.students[username];
+                }
+
+                this.showStudentView();
+            },
+
+            showStudentView() {
+                document.getElementById('studentAuth').classList.add('hidden');
+                document.getElementById('pinGate').classList.add('hidden');
+                document.getElementById('header').classList.remove('hidden');
+                document.getElementById('header-title').textContent = `${this.student.firstName} - ${this.currentCourse.toUpperCase()}`;
+                document.getElementById('header-subtitle').textContent = `Accuracy: ${this.getAccuracy()}%`;
+                document.getElementById('studentView').classList.add('active');
+
+                this.loadStudentData();
+                this.renderFilters();
+                this.nextProblem();
+            },
+
+            showTeacherView() {
+                document.getElementById('pinGate').classList.add('hidden');
+                document.getElementById('header').classList.remove('hidden');
+                document.getElementById('header-title').textContent = 'Teacher Dashboard';
+                document.getElementById('header-subtitle').textContent = '🍎 You are logged in';
+                document.getElementById('teacherView').classList.add('active');
+
+                this.loadTeacherData();
+                this.renderStudentsList();
+            },
+
+            loadStudentData() {
+                const stored = localStorage.getItem('students');
+                if (stored) this.students = JSON.parse(stored);
+                
+                this.currentScore = this.student.scores?.[this.currentCourse] || { right: 0, tried: 0, streak: 0 };
+                this.updateStats();
+            },
+
+            loadTeacherData() {
+                const stored = localStorage.getItem('students');
+                if (stored) this.students = JSON.parse(stored);
+
+                const helpStored = localStorage.getItem('helpRequests');
+                if (helpStored) this.helpRequests = JSON.parse(helpStored);
+            },
+
+            renderFilters() {
+                const topics = Object.keys(QUESTIONS[this.currentCourse]);
+                const topicHTML = `
+                    <button class="chip ${this.currentTopic === 'All' ? 'active' : ''}" onclick="app.setTopic('All')">🌈 All</button>
+                    ${topics.map(t => `<button class="chip ${this.currentTopic === t ? 'active' : ''}" onclick="app.setTopic('${t}')">${t}</button>`).join('')}
+                `;
+                document.getElementById('topicFilter').innerHTML = topicHTML;
+
+                const diffs = ['Easy', 'Medium', 'Hard'];
+                const diffHTML = diffs.map(d => `
+                    <button class="chip ${this.currentDiff === d ? 'active' : ''}" onclick="app.setDiff('${d}')">${d}</button>
+                `).join('');
+                document.getElementById('difficultyFilter').innerHTML = diffHTML;
+            },
+
+            setTopic(topic) {
+                this.currentTopic = topic;
+                this.currentProblemIdx = 0;
+                this.renderFilters();
+                this.nextProblem();
+            },
+
+            setDiff(diff) {
+                this.currentDiff = diff;
+                this.currentProblemIdx = 0;
+                this.renderFilters();
+                this.nextProblem();
+            },
+
+            getVisibleProblems() {
+                const all = [];
+                Object.keys(QUESTIONS[this.currentCourse]).forEach(diff => {
+                    if (this.currentDiff === 'All' || this.currentDiff === diff) {
+                        QUESTIONS[this.currentCourse][diff].forEach((q, idx) => {
+                            all.push({ ...q, difficulty: diff });
+                        });
+                    }
+                });
+                return all;
+            },
+
+            nextProblem() {
+                this.showingHint = false;
+                const visible = this.getVisibleProblems();
+                if (visible.length === 0) return;
+
+                if (this.currentProblemIdx >= visible.length) {
+                    this.currentProblemIdx = 0;
+                }
+
+                const problem = visible[this.currentProblemIdx];
+                document.getElementById('question').textContent = problem.question;
+                document.getElementById('problemTopic').textContent = this.currentTopic;
+                document.getElementById('problemDiff').textContent = problem.difficulty;
+                document.getElementById('feedback').innerHTML = '';
+                document.getElementById('hintDisplay').innerHTML = '';
+                document.getElementById('hintBox').classList.remove('hidden');
+
+                const choicesHTML = problem.choices.map((c, i) => `
+                    <button class="choice" onclick="app.pickAnswer(${i})">${String.fromCharCode(65+i)}. ${c}</button>
+                `).join('');
+                document.getElementById('choices').innerHTML = choicesHTML;
+
+                this.startTimer(problem.difficulty);
+
+                this.currentProblemIdx++;
+            },
+
+            startTimer(difficulty) {
+                const timeLimit = difficulty === 'Easy' ? 60 : difficulty === 'Medium' ? 120 : 180;
+                this.timeRemaining = timeLimit;
+                this.updateTimerDisplay();
+
+                if (this.timer) clearInterval(this.timer);
+                this.timer = setInterval(() => {
+                    this.timeRemaining--;
+                    this.updateTimerDisplay();
+                    if (this.timeRemaining <= 0) {
+                        clearInterval(this.timer);
+                    }
+                }, 1000);
+            },
+
+            updateTimerDisplay() {
+                const timerEl = document.getElementById('timer');
+                timerEl.textContent = `${this.timeRemaining}s`;
+                if (this.timeRemaining <= 10) {
+                    timerEl.classList.add('warning');
+                } else {
+                    timerEl.classList.remove('warning');
+                }
+            },
+
+            pickAnswer(idx) {
+                const visible = this.getVisibleProblems();
+                const problem = visible[Math.max(0, this.currentProblemIdx - 1)];
+                const correct = idx === problem.answer;
+
+                if (correct) {
+                    this.currentScore.right++;
+                    this.currentScore.streak++;
+                    document.getElementById('feedback').innerHTML = '<div class="feedback correct">✅ Correct! Great job!</div>';
+                } else {
+                    this.currentScore.streak = 0;
+                    document.getElementById('feedback').innerHTML = '<div class="feedback incorrect">❌ Not quite. Check the correct answer above.</div>';
+                }
+
+                this.currentScore.tried++;
+                this.student.scores[this.currentCourse] = this.currentScore;
+                localStorage.setItem('students', JSON.stringify(this.students));
+
+                this.updateStats();
+
+                const choices = document.querySelectorAll('.choice');
+                choices[idx].classList.add(correct ? 'correct' : 'incorrect');
+                choices[problem.answer].classList.add('correct');
+                choices.forEach(c => c.style.pointerEvents = 'none');
+
+                document.getElementById('hintBox').classList.add('hidden');
+            },
+
+            showHint() {
+                const visible = this.getVisibleProblems();
+                const problem = visible[Math.max(0, this.currentProblemIdx - 1)];
+                document.getElementById('hintDisplay').innerHTML = `<div class="hint-box">💡 ${problem.hint}</div>`;
+                document.getElementById('hintBox').classList.add('hidden');
+            },
+
+            askForHelp() {
+                document.getElementById('helpModal').classList.add('active');
+            },
+
+            submitHelp() {
+                const reason = document.getElementById('helpReason').value;
+                const note = document.getElementById('helpNote').value;
+                const visible = this.getVisibleProblems();
+                const problem = visible[Math.max(0, this.currentProblemIdx - 1)];
+
+                const help = {
+                    id: Date.now(),
+                    studentName: `${this.student.firstName} ${this.student.lastName}`,
+                    studentId: this.student.id,
+                    problem: problem.question,
+                    reason,
+                    note,
+                    date: new Date().toLocaleDateString(),
+                    resolved: false
+                };
+
+                this.helpRequests.push(help);
+                localStorage.setItem('helpRequests', JSON.stringify(this.helpRequests));
+
+                alert('Help request sent to teacher!');
+                document.getElementById('helpModal').classList.remove('active');
+                document.getElementById('helpReason').value = this.helpReason;
+                document.getElementById('helpNote').value = '';
+            },
+
+            showScratchpad() {
+                document.getElementById('scratchpadModal').classList.add('active');
+            },
+
+            updateStats() {
+                document.getElementById('correctCount').textContent = this.currentScore.right;
+                document.getElementById('triedCount').textContent = this.currentScore.tried;
+                document.getElementById('streakCount').textContent = this.currentScore.streak + (this.currentScore.streak >= 3 ? '🔥' : '');
+            },
+
+            getAccuracy() {
+                if (this.currentScore.tried === 0) return 0;
+                return Math.round((this.currentScore.right / this.currentScore.tried) * 100);
+            },
+
+            // TEACHER FUNCTIONS
+            switchTab(tab) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.tabs button').forEach(el => el.classList.remove('active'));
+                document.getElementById(`${tab}-tab`).classList.add('active');
+                event.target.classList.add('active');
+
+                if (tab === 'students') this.renderStudentsList();
+                if (tab === 'problems') this.renderProblems();
+                if (tab === 'help') this.renderHelpRequests();
+            },
+
+            renderStudentsList() {
+                const list = Object.values(this.students).map(s => `
+                    <div class="student-row">
+                        <div class="student-info">
+                            <div class="student-name">${s.firstName} ${s.lastName}</div>
+                            <div class="student-stats">@${s.id} · Algebra 1: ${s.scores?.algebra1?.right || 0} correct</div>
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('studentsList').innerHTML = list || '<p>No students yet</p>';
+            },
+
+            renderProblems() {
+                const list = Object.keys(QUESTIONS).map(course => {
+                    const problems = [];
+                    Object.keys(QUESTIONS[course]).forEach(diff => {
+                        QUESTIONS[course][diff].forEach(q => {
+                            problems.push(`<div class="problem-row"><strong>${q.question.substring(0, 50)}...</strong> (${diff})</div>`);
+                        });
+                    });
+                    return `<h4>${course}</h4>${problems.join('')}`;
+                }).join('');
+                document.getElementById('problemsList').innerHTML = list;
+            },
+
+            renderHelpRequests() {
+                const list = this.helpRequests.filter(h => !h.resolved).map(h => `
+                    <div class="help-request">
+                        <h4>${h.studentName}</h4>
+                        <p><strong>Question:</strong> ${h.problem}</p>
+                        <p><strong>Reason:</strong> ${h.reason}</p>
+                        <p><strong>Note:</strong> ${h.note || '(none)'}</p>
+                        <p style="font-size: 12px; opacity: 0.5;">${h.date}</p>
+                        <button onclick="app.resolveHelp(${h.id})" class="btn-success">✓ Mark as helped</button>
+                    </div>
+                `).join('');
+                document.getElementById('helpList').innerHTML = list || '<p>No help requests</p>';
+            },
+
+            resolveHelp(id) {
+                const help = this.helpRequests.find(h => h.id === id);
+                if (help) {
+                    help.resolved = true;
+                    localStorage.setItem('helpRequests', JSON.stringify(this.helpRequests));
+                    this.renderHelpRequests();
+                }
+            },
+
+            copyStudentLink() {
+                const link = `${window.location.href}?course=${this.currentCourse}`;
+                navigator.clipboard.writeText(link);
+                alert('Student link copied!\n\n' + link);
+            },
+
+            updatePin() {
+                const newPin = document.getElementById('newPin').value;
+                if (newPin.length < 4) {
+                    document.getElementById('pinMsg').textContent = 'PIN must be at least 4 characters';
+                    return;
+                }
+                this.teachers.pin = newPin;
+                localStorage.setItem('teachers', JSON.stringify(this.teachers));
+                document.getElementById('pinMsg').textContent = '✓ PIN updated!';
+                document.getElementById('newPin').value = '';
+            }
+        };
+
+        // LOAD DATA ON START
+        window.onload = () => {
+            const stored = localStorage.getItem('students');
+            if (stored) app.students = JSON.parse(stored);
+
+            const teachersStored = localStorage.getItem('teachers');
+            if (teachersStored) app.teachers = JSON.parse(teachersStored);
+
+            const helpStored = localStorage.getItem('helpRequests');
+            if (helpStored) app.helpRequests = JSON.parse(helpStored);
+        };
+    </script>
+</body>
+</html>

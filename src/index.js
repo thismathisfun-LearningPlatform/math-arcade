@@ -2,7 +2,6 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
-import SmokeTest from './SmokeTest';
 
 // Minimal storage API backed by localStorage (used by the app)
 if (!window.storage) {
@@ -19,9 +18,4 @@ if (!window.storage) {
 
 const container = document.getElementById('root');
 const root = createRoot(container);
-root.render(
-  <>
-    <SmokeTest />
-    <App />
-  </>
-);
+root.render(<App />);

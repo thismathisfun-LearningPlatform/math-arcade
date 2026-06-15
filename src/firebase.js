@@ -8,18 +8,24 @@
 //  See FIREBASE_SETUP_GUIDE.md for click-by-click instructions.
 // ═══════════════════════════════════════════════════════════
 
-import { initializeApp } from "firebase/app";
+//import { initializeApp } from "firebase/app";
+
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js";
 import { getFirestore } from "firebase/firestore";
 
-// ⬇️ REPLACE this whole block with the config from YOUR Firebase project
 const firebaseConfig = {
-  apiKey:            "PASTE_YOUR_API_KEY_HERE",
-  authDomain:        "your-project-id.firebaseapp.com",
-  projectId:         "your-project-id",
-  storageBucket:     "your-project-id.appspot.com",
-  messagingSenderId: "PASTE_SENDER_ID_HERE",
-  appId:             "PASTE_APP_ID_HERE",
-};
+    apiKey: "AIzaSyA0Eqg7kVSuOWpyEX_zjI8IkakqTQ9NDJU",
+    authDomain: "matharcade-272bf.firebaseapp.com",
+    projectId: "matharcade-272bf",
+    storageBucket: "matharcade-272bf.firebasestorage.app",
+    messagingSenderId: "469902060855",
+    appId: "1:469902060855:web:1f7d7218ce15d3f8f9beb2",
+    measurementId: "G-LYRX75CZN8"
+  };
 
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
 export const db = getFirestore(app);

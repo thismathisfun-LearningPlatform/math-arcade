@@ -8,11 +8,8 @@
 //  See FIREBASE_SETUP_GUIDE.md for click-by-click instructions.
 // ═══════════════════════════════════════════════════════════
 
-//import { initializeApp } from "firebase/app";
-
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js";
+import { initializeApp } from "firebase/app";
+import { getAnalytics, isSupported as isAnalyticsSupported } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -26,6 +23,13 @@ const firebaseConfig = {
   };
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+// Analytics isn't supported in every environment (e.g. server-side rendering),
+// so only initialize it when the browser supports it.
+isAnalyticsSupported().then((supported) => {
+  if (supported) {
+    getAnalytics(app);
+  }
+});
 
 export const db = getFirestore(app);

@@ -82,7 +82,6 @@ function answerValue(raw) {
     const [a, b] = s.split("/").map(Number);
     if (b !== 0) return a / b;
   }
-  const mixed = s.match(/^(-?\d+)(\d+)\/(\d+)$/); // e.g. "112/3" from "1 1/2" after space-strip — rare; skip
   if (/^-?\d*\.?\d+$/.test(s)) return parseFloat(s);
   return null;
 }
@@ -2365,6 +2364,7 @@ function StudentView({ course, student, problems, flags, onHelp, onPersistScore,
       });
     }, 1000);
     return () => { if (timerIntervalRef.current) clearInterval(timerIntervalRef.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current?.id, picked]);
 
   // Restore saved scratch work whenever the question changes or the pad opens
@@ -2374,6 +2374,7 @@ function StudentView({ course, student, problems, flags, onHelp, onPersistScore,
       const t = setTimeout(loadScratch, 30);
       return () => clearTimeout(t);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current?.id, showScratchpad]);
 
   // ── Desmos graphing calculator (lazy-loaded from CDN when first opened) ──
@@ -3546,6 +3547,7 @@ function CoursePlatform({ courseId, onBack }) {
         try { await window.storage.set(STORE, JSON.stringify({problems:course.seeds,flags:[]}), true); } catch {}
       } finally { setLoading(false); }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId]);
 
   const persist = useCallback(async (np, nf) => {

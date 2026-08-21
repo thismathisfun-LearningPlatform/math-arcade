@@ -8,11 +8,7 @@
 //  See FIREBASE_SETUP_GUIDE.md for click-by-click instructions.
 // ═══════════════════════════════════════════════════════════
 
-//import { initializeApp } from "firebase/app";
-
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js";
+import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -26,6 +22,5 @@ const firebaseConfig = {
   };
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
 export const db = getFirestore(app);

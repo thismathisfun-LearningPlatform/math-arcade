@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { db } from "./firebase";
 import { doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "firebase/firestore";
 
-
 /* ═══════════════════════════════════════════════════════════
    STORAGE SHIM → Firebase Firestore
    The app talks to window.storage (built for Claude artifacts).

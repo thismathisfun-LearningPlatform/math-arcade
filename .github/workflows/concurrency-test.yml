@@ -1,0 +1,45 @@
+# thismathisfun — concurrency guardrail
+# Put this file at .github/workflows/concurrency-test.yml
+#
+# Runs the deterministic concurrency simulation on every push and pull request.
+# It needs no secrets and no database — it fails the build if the storage design
+# ever loses a concurrent write again. This is the check that would have caught
+# the original data-loss bug before it reached students.
+name: Concurrency test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  concurrency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      # The simulation is a single self-contained file — no install needed.
+      - name: Run concurrency simulation (must lose zero writes)
+        run: node loadtest_concurrency.mjs
+
+  # OPTIONAL: also hammer your real Firestore. Disabled by default.
+  # Add a repo secret FIREBASE_CONFIG (your web config JSON) and remove the
+  # "if: false" line to enable it.
+  firebase-load:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install firebase
+      - name: Real Firestore load test
+        env:
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+          WRITERS: '60'
+          PER: '40'
+        run: node loadtest_firebase.mjs

@@ -3,7 +3,6 @@ import { db } from "./firebase";
 import { doc, getDoc, setDoc, deleteDoc, collection, getDocs, runTransaction,
          addDoc, query, where, updateDoc } from "firebase/firestore";
 import PremiumArea from "./PremiumArea";
-
 /* ═══════════════════════════════════════════════════════════
    STORAGE SHIM → Firebase Firestore
    The app talks to window.storage (built for Claude artifacts).

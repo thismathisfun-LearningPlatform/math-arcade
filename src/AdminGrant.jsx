@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { db } from "./firebase";
 import { collection, getDocs, query, where, doc, getDoc, setDoc, updateDoc,
          serverTimestamp, deleteField, Timestamp } from "firebase/firestore";
-
 const NO_LIMIT_MS = Date.parse("2999-12-31T00:00:00Z"); // sentinel for "no expiry"
 
 export default function AdminGrant({ owner, courseId }) {

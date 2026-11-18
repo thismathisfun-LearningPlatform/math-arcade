@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "studioed",
     "public": "build",
     "ignore": [
       "firebase.json",
